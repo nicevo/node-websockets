@@ -14,13 +14,25 @@ const server = express()
 
 const wss = new SocketServer({ server });
 
+const data = {}
+
+let teamsAvg = {
+  "team1": 0,
+  "team2": 0
+}
+
+const sum = xs=> xs.reduce((p, x)=> p+x, 0)
+const avg = xs=> xs.length?sum(xs)/xs.length:0
+const getAverage = (data, teamId)=> avg(data.filter(d => d.team == teamId).map(d=> d.tilt))
+
+
 wss.on('connection', (ws) => {
   console.log('Client connected');
   ws.on('close', () => console.log('Client disconnected'));
   ws.on('message', function(msg){
     const obj = JSON.parse(msg)
     data[obj.userId]=obj
-    recent = Object.values(data).filter(d => d.timestamp > (Date.now() - 10000) )
+    let recent = Object.values(data).filter(d => d.timestamp > (Date.now() - 10000) )
     console.log('recent data'+JSON.stringify(recent))
 
     teamsAvg = {
@@ -31,7 +43,7 @@ wss.on('connection', (ws) => {
     // console.log('client tada!', ws.clients)
     wss.clients.forEach(function each(client) {
       let cnt = 0
-      if (client !== ws && client.readyState === WebSocket.OPEN) {
+      if (client !== ws && client.readyState === WebSockets.OPEN) {
         console.log('client tada!', cnt)
         cnt++
         client.send(JSON.stringify({teamsAvg}));
@@ -43,6 +55,6 @@ wss.on('connection', (ws) => {
 
 setInterval(() => {
   wss.clients.forEach((client) => {
-    client.send("unicorns "+new Date().toTimeString());
+    client.send("helloMom"+new Date().toTimeString());
   });
 }, 1000);
