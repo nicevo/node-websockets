@@ -32,7 +32,7 @@ wss.on('connection', (ws) => {
   ws.on('message', function(msg){
     const obj = JSON.parse(msg)
     data[obj.userId]=obj
-    let recent = Object.values(data).filter(d => d.timestamp > (Date.now() - 10000) )
+    let recent = Object.keys(data).map(k => { return data[key]}).filter(d => d.timestamp > (Date.now() - 10000) )
     console.log('recent data'+JSON.stringify(recent))
 
     teamsAvg = {
